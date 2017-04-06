@@ -39,8 +39,7 @@ lines(filteredByDate$Time, filteredByDate$Sub_metering_3, col = 'blue')
 legend('topright', 
        col=c('black', 'red', 'blue'),
        c('Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3'),
-       lty=1,
-       cex = 0.75)
+       lty=1)
 
 dev.copy(png, file = imgFilePath, width = 480, height = 480)
 dev.off()

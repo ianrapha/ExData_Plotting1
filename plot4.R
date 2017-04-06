@@ -2,7 +2,7 @@ baseDir <- './data/'
 repoDir <- './exploratory-analysis/week01/ExData_Plotting1/'
 zipFile <- 'household_power_consumption.zip'
 dataFile <- 'household_power_consumption.txt'
-imgFile <- 'plot1.png'
+imgFile <- 'plot4.png'
 
 zipFilePath <- paste(baseDir, zipFile, sep = '')
 dataFilePath <- paste(baseDir, dataFile, sep = '')
@@ -17,15 +17,46 @@ if(!file.exists(dataFilePath)) {
 }
 
 data <- read.csv(dataFilePath, header = TRUE, sep = ';', na.strings = '?')
-data$Date <- as.Date(data$Date)
+data$Time <- strptime(paste(data$Date, data$Time), '%d/%m/%Y %H:%M:%S')
+data$Date <- as.Date(data$Date, '%d/%m/%Y')
 
-filteredByDate <- data[data$Date %in% as.Date(c('2007-02-01', '2007-02-02')), ]
+dates <- as.Date(c('2007-02-01', '2007-02-02'))
 
-hist(filteredByDate$Global_active_power, 
-     main = 'Global Active Power', 
-     xlab = 'Global Active Power (kilowatts)',
-     ylab = 'Frequency',
-     col = "red")
+filteredByDate <- data[data$Date %in% dates, ]
 
-png(imgFilePath, width = 480, height = 480)
+par(mfrow = c(2, 2))
+
+with(filteredByDate, {
+    plot(Time, 
+         Global_active_power, 
+         type="l", 
+         xlab="", 
+         ylab="Global Active Power")
+
+    plot(Time, 
+         Voltage, 
+         type="l", 
+         xlab="datetime", 
+         ylab="Voltage")
+    
+    plot(Time, Sub_metering_1, 
+         type = 'l',
+         col = 'black',
+         xlab = '',
+         ylab = 'Energy sub metering')
+    
+    lines(filteredByDate$Time, filteredByDate$Sub_metering_2, col = 'red')
+    lines(filteredByDate$Time, filteredByDate$Sub_metering_3, col = 'blue')
+    legend('topright', 
+           col=c('black', 'red', 'blue'),
+           c('Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3'),
+           lty=1)
+    
+    plot(Time, Global_reactive_power, 
+         type="l", 
+         xlab="datetime", 
+         ylab="Global_reactive_power")
+})
+
+dev.copy(png, file = imgFilePath, width = 480, height = 480)
 dev.off()
